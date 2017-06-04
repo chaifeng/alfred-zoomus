@@ -11,6 +11,9 @@ Alfred Workflow，用于新建和加入 [Zoom](https://zoom.us) 会议。
   4. 在 `zm` 关键字后面可以继续添加 meeting id，按下回车会自动加入；
   5. 在 `zm` 关键字后面无论是否有 meeting id，按下 Command 键都会新建一个会议。
 
+下载：https://github.com/chaifeng/alfred-zoomus/releases
+
+
 This Alfred Workflow is used to start or join a [Zoom](https://zoom.us/) meeting.
 Support free or paid account, you can join a meeting without logged in.
 
@@ -21,3 +24,5 @@ Usage:
   3. A new keyword “zm” is used to start a new meeting.
   4. Append an existing Zoom meeting ID after the keyword “zm”, it will join this meeting. For example: `zm 123-456-789`, `zm 123456789`
   5. Whether or not there is a meeting ID after keyword zm，press Command + Enter will always start a new meeting.
+
+Download: https://github.com/chaifeng/alfred-zoomus/releases
