@@ -102,8 +102,10 @@ function run(argv) {
   var startWithoutVideo = function() {
     console.log('Start New Meeting.');
     clickButton(zoomWindow, 'Start New Meeting');
-    let meetingWindow = findWindowByCondition(zoomProcess, { name: { _beginsWith: 'Zoom Meeting ID: ' } }, 30);
-    return meetingWindow.name().substring('Zoom Meeting ID: '.length);
+    let meetingIdStr = "Meeting ID: ";
+    let meetingWindow = findWindowByCondition(zoomProcess, { name: {_contains: meetingIdStr } }, 30);
+    let windowName = meetingWindow.name();
+    return windowName.substring(windowName.indexOf(meetingIdStr) + meetingIdStr.length);
   };
 
   var joinMeeting = function(zoomWindow, meetingId) {
