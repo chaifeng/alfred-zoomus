@@ -73,9 +73,18 @@ function run(argv) {
 
   var textField = function(appWindow, fieldName) {
     console.log('window: ' + appWindow.name() + ', text field: ' + fieldName);
-    return appWindow.textFields.whose({
+    var textFields = appWindow.textFields;
+    var theFields = textFields.whose({
       _or: [{ description: fieldName }, { name: fieldName }],
-    })[0];
+    });
+    if(theFields.length > 0) return theFields[0];
+    console.log('Find text field by AXPlaceholderValue: ' + fieldName);
+    for(let i=0; i<textFields.length; i++){
+      let field = textFields[i];
+      if(field.attributes['AXPlaceholderValue'].value() == fieldName)
+        return field;
+    }
+    return undefined;
   };
 
   var zoom = Application('zoom.us');
@@ -110,15 +119,13 @@ function run(argv) {
 
   var joinMeeting = function(zoomWindow, meetingId) {
     console.log('Join Meeting: ' + meetingId);
-    if (zoomWindow.name() == 'Zoom Cloud Meetings') {
+    if (zoomWindow.name() == 'Zoom') {
+      clickButtonIfExist(zoomWindow, 'Home');
       clickButton(zoomWindow, 'Join Meeting');
-    } else {
-      clickButton(zoomWindow, 'Home');
-      clickButton(zoomWindow, 'Join');
     }
 
-    var zoomJoinWindow = findWindow(zoomProcess, 'Join Meeting');
-    meetingTextField = 'Please enter the Meeting ID or Personal Link Name here';
+    var zoomJoinWindow = zoomWindow.sheets[0];
+    meetingTextField = 'Meeting ID or Personal Link Name';
 
     let t = textField(zoomJoinWindow, meetingTextField);
     console.log('Text Field origin value: ' + t.value());
