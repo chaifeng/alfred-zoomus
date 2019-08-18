@@ -45,6 +45,12 @@ function run(argv) {
 
   var findButton = function(appWindow, buttonName) {
     console.log(appWindow.name() + ', ' + buttonName);
+    for(i=0;i<appWindow.buttons.length;i++) {
+      var b = appWindow.buttons[i];
+      if(buttonName == b.value()) {
+        return b;
+      }
+    }
     let buttons = appWindow.buttons.whose({
       _or: [{ description: buttonName }, { name: buttonName }],
     });
@@ -100,17 +106,21 @@ function run(argv) {
 
   var zoomWindow;
   waitFor(10, function() {
-    zoomWindow = findWindow(zoomProcess, ['Zoom - Pro Account', 'Zoom - Free Account', 'Zoom Cloud Meetings', 'Zoom']);
+    zoomWindow = findWindow(zoomProcess, ['Zoom - Pro Account', 'Zoom - Free Account', 'Zoom Cloud Meetings', 'Zoom', 'Login', 'zoom.us']);
     console.log(zoomWindow.name());
     console.log(zoomWindow.buttons.length);
-    return zoomWindow.name() != 'Zoom Cloud Meetings' || existButton(zoomWindow, 'Join Meeting');
+    return zoomWindow.name() != 'Zoom Cloud Meetings' || existButton(zoomWindow, 'Join a Meeting');
   });
 
   console.log('Zoom Window: ' + zoomWindow.name());
 
   var startWithoutVideo = function() {
     console.log('Start New Meeting.');
-    clickButton(zoomWindow, 'Start New Meeting');
+    if(existButton(zoomWindow, 'Sign In')) {
+      return ''
+    }
+    clickButtonIfExist(zoomWindow, 'Home');
+    clickButton(zoomWindow, 'starting new meeing without video');
     let meetingIdStr = "Meeting ID: ";
     let meetingWindow = findWindowByCondition(zoomProcess, { name: {_contains: meetingIdStr } }, 30);
     let windowName = meetingWindow.name();
@@ -122,9 +132,17 @@ function run(argv) {
     if (zoomWindow.name() == 'Zoom') {
       clickButtonIfExist(zoomWindow, 'Home');
       clickButton(zoomWindow, 'Join Meeting');
+    } else if (zoomWindow.name() == 'Login') {
+      console.log('Without log in to join a Meeting: ' + meetingId);
+      clickButtonIfExist(zoomWindow, 'Home');
+      clickButton(zoomWindow, 'Join a Meeting');
     }
 
     var zoomJoinWindow = zoomWindow.sheets[0];
+    if(zoomJoinWindow == undefined) {
+      console.log('At log in window');
+      zoomJoinWindow = findWindow(zoomProcess, ['', 'Zoom']);
+    }
     meetingTextField = 'Meeting ID or Personal Link Name';
 
     let t = textField(zoomJoinWindow, meetingTextField);
@@ -136,9 +154,12 @@ function run(argv) {
 
   console.log('query: ' + query);
   if (query == undefined || query.trim() == '') {
-    return 'https://zoom.us/j/' + startWithoutVideo();
+    let meetingUrl = 'https://zoom.us/j/' + startWithoutVideo();
+    console.log(meetingUrl);
+    return meetingUrl;
   } else {
+    console.log(query)
     joinMeeting(zoomWindow, query);
-    return '';
+    return query;
   }
 }
