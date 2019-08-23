@@ -109,7 +109,7 @@ function run(argv) {
     zoomWindow = findWindow(zoomProcess, ['Zoom - Pro Account', 'Zoom - Free Account', 'Zoom Cloud Meetings', 'Zoom', 'Login', 'zoom.us']);
     console.log(zoomWindow.name());
     console.log(zoomWindow.buttons.length);
-    return zoomWindow.name() != 'Zoom Cloud Meetings' || existButton(zoomWindow, 'Join a Meeting');
+    return existButton(zoomWindow, 'Join a Meeting') || existButton(zoomWindow, 'Join Meeting') || existButton(zoomWindow, 'Login') || existButton(zoomWindow, 'Home');
   });
 
   console.log('Zoom Window: ' + zoomWindow.name());
